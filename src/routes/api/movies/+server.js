@@ -1,19 +1,32 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/createDb.js';
-import { db_all, db_get } from '$lib/server/sql';
-
+// import { db } from '$lib/server/createDb.js';
+// import { db_all, db_get } from '$lib/server/sql';
+import { supabase } from '$lib/supabaseClient';
 
 export const GET = async () => {
-  try {
-    const rows = await db_all(db, 'SELECT * FROM movie ORDER BY RANDOM() LIMIT 2');
-    for (const row of rows) {
-      const rating = await db_get(db, 'SELECT rate FROM rating where rating_id = ?', [row.rating_id]);
-      const director = await db_get(db, 'SELECT first_name, last_name FROM director where director_id = ?', [row.director_id]);
-      row.rate = rating.rate;
-      row.director = `${director.first_name} ${director.last_name}`;
-    }
-    return json({ movies: rows });
-  } catch (error) {
-    return json({ error: error.message }, { status: 500 });
-  } 
+	const { data: movies, error } = await supabase.from('randomized_movies').select('*').limit(2);
+
+	for (const movie of movies) {
+		const { data: rate } = await supabase
+			.from('rating')
+			.select('rate')
+			.eq('rating_id', movie.rating_id)
+			.single();
+
+		const { data: director } = await supabase
+			.from('director')
+			.select('first_name, last_name')
+			.eq('director_id', movie.director_id)
+			.single();
+
+		movie.director_name = `${director.first_name} ${director.last_name}`;
+
+		movie.rate = rate.rate;
+	}
+
+	if (error) {
+		return json({ error: error.message }, { status: 500 });
+	}
+
+	return json({ movies: movies });
 };
