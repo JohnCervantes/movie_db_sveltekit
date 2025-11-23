@@ -19,13 +19,19 @@ Lightweight movie database demo built with SvelteKit and SQLite.
 - **Server / DB:** lightweight SQLite DB and helper scripts in `src/lib/server`.
 
 **Quick Links:**
-- **DB file:** `src/lib/server/movie.db`
+- **DB file (dev):** `src/lib/server/movie.db`
 - **DB helpers:** `src/lib/server/createDb.js`, `src/lib/server/createTable.js`, `src/lib/server/sql.js`
+- **Config:** `.env.local` (Supabase keys for production)
 
 **Tech stack:**
 - **SvelteKit** (UI)
 - **Node.js** (server-side routes)
-- **SQLite** (local database via `sqlite3`)
+- **SQLite** (local database via `sqlite3` – **development only**)
+- **Supabase** (PostgreSQL backend – **production only**)
+
+**Database Strategy:**
+- **Development:** SQLite at `src/lib/server/movie.db` for fast local iteration.
+- **Production:** Supabase PostgreSQL with environment variables (`PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_PUBLISHABLE_KEY`).
 
 **Features:**
 - Movie, director, actor, user and rating tables.
@@ -54,6 +60,15 @@ npm run preview
 **Database**
 - The app uses SQLite located at `src/lib/server/movie.db` (created by `createDb.js`).
 - Table creation is handled by `src/lib/server/createTable.js`.
+- If `movie.db` does not exist, it is created automatically when server-side code runs.
+- To reset the database, remove the `.db` file and restart the dev server.
+
+**Production (Supabase)**
+- Supabase PostgreSQL database is used in production.
+- Connection details are stored in `.env.local` (or production environment variables):
+  - `PUBLIC_SUPABASE_URL` – Supabase project URL
+  - `PUBLIC_SUPABASE_PUBLISHABLE_KEY` – Supabase anon key
+- Tables are provisioned separately in your Supabase project (use the same schema as SQLite).
 
 Schema summary (columns shown with primary keys and foreign keys):
 
@@ -152,8 +167,21 @@ erDiagram
 ```
 
 **Notes / maintenance**
+- SQLite is lightweight and ideal for development but not suitable for multi-user production environments. Supabase PostgreSQL provides scalability and reliability.
 - If `src/lib/server/movie.db` does not exist, the `createDb.js` script opens/creates it automatically when server-side code runs.
 - To (re)create tables, run the `createTable.js` script (it executes on import). Be careful: repeated runs are guarded with `CREATE TABLE IF NOT EXISTS` but manual DB resets require removing the `.db` file.
 - There is no top-level `LICENSE` file in this repo (checked `src/lib/server` for license; none found). Add a `LICENSE` to the repo root if you want to publish with a specific license.
+
+**Deployment**
+
+- Use `vercel --prod` or similar for production builds (see `vite.config.js` and `svelte.config.js`).
+- Ensure production environment variables are set in your hosting platform (Vercel, Netlify, etc.).
+
+**Further work / suggestions**
+
+- Add authentication middleware and proper password hashing.
+- Add API documentation for server routes (OpenAPI or simple markdown).
+- Add tests and seed scripts to populate example data.
+- Migrate SQLite schema to Supabase PostgreSQL with a migration script.
 
 
