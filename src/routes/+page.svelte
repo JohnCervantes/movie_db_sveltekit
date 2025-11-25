@@ -1,23 +1,21 @@
 <script>
 	import MovieContainer from '$lib/components/MovieContainer.svelte';
 	import { Confetti } from 'svelte-confetti';
-	import { onMount } from 'svelte';
 
-	let data = $state('');
+	let { data } = $props();
+
+	let movies = $state(data.movies);
 	let isRight = $state(false);
-
-	onMount(async () => {
-		const response = await fetch('/api/movies');
-		data = await response.json();
-	});
 
 	const reFetchData = async () => {
 		const response = await fetch('/api/movies');
-		data = await response.json();
+		const result = await response.json();
+		movies = result.movies;
+		
 	};
 
 	const rightGuess = (score) => {
-        const winner = Math.max(data.movies[0].rate, data.movies[1].rate);
+        const winner = Math.max(movies[0].rate, movies[1].rate);
         isRight = winner === score 
     };
 </script>
@@ -46,9 +44,9 @@
 	</div>
 {/if}
 
-{#if data}
+{#if movies}
 	<section class="flex justify-center gap-10">
-		{#each data.movies as movie}
+		{#each movies as movie}
 			<MovieContainer {reFetchData} {rightGuess} data={movie} />
 		{/each}
 	</section>
