@@ -2,7 +2,7 @@
     import { enhance } from '$app/forms';
 </script>
 
-<form method="POST" action="/logout?">
+<form method="POST" action="/auth?/logout">
     <button 
         type="submit" 
         class="bg-red-200 rounded-lg p-2 cursor-pointer" 

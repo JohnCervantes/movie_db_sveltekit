@@ -17,6 +17,7 @@
 	<form
 		class="flex flex-col bg-white shadow-lg shadow-gray-400 rounded-lg w-[300px] h-[350px] gap-4 p-4 m-4"
 		method="POST"
+		action="/auth?/register"
 		use:enhance
 	>
 		<label>

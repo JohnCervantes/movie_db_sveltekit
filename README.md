@@ -10,7 +10,7 @@ If you're seeing this, you've probably already done this step. Congrats!
 # create a new project in the current directory
 # Movie DB (SvelteKit)
 
-Lightweight movie database demo built with SvelteKit and SQLite.
+Lightweight movie database demo built with SvelteKit and SQLite/PostgresQL.
 
 **Status:** Prototype / local demo
 
@@ -69,6 +69,8 @@ npm run preview
   - `PUBLIC_SUPABASE_URL` – Supabase project URL
   - `PUBLIC_SUPABASE_PUBLISHABLE_KEY` – Supabase anon key
 - Tables are provisioned separately in your Supabase project (use the same schema as SQLite).
+ - Supabase Auth is used for email/password authentication in production. Client-side flows should use the Supabase client (`@supabase/supabase-js`) to sign up and sign in users; server-side verification is recommended for sensitive operations.
+ - Store only public/anon keys in `.env.local`; keep any service-role keys or other secrets in your hosting provider's secure environment variables.
 
 Schema summary (columns shown with primary keys and foreign keys):
 
@@ -179,7 +181,6 @@ erDiagram
 
 **Further work / suggestions**
 
-- Add authentication middleware and proper password hashing.
 - Add API documentation for server routes (OpenAPI or simple markdown).
 - Add tests and seed scripts to populate example data.
 - Migrate SQLite schema to Supabase PostgreSQL with a migration script.
